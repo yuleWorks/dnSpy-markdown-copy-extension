@@ -18,7 +18,7 @@ Fork: https://github.com/yuleWorks/dnSpy-exposed-ColorCollection/
 
 This project is intended to be built within the dnSpy source tree, specifically from within `dnSpy/Extensions/`.
 
-After building, copy the compiled extension DLL to a folder within the built dnSpy extension directory:
+After building, copy the compiled extension DLL to a folder within the forked dnSpy extension directory:
 
 `dnSpy/dnSpy/bin/Release/netX.Y/win-x64/Extensions/DnSpyMarkdownExtension/`
 
