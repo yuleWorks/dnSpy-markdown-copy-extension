@@ -1,16 +1,33 @@
 # dnSpy Markdown Copy Extension (for use with Obsidian)
 
-Custom dnSpy extension for copying selected decompiled code to formatted, color-preserving Markdown, matching the default dnSpy dark theme.
+Custom dnSpy extension that copies selected decompiled code as formatted, color-preserving Markdown, matching the default dnSpy dark theme.
 
-## What it does
+## Demo
+![Demo](images/demo.gif)
 
-This extension adds the ability to copy document text with Markdown formatting that preserves the indentation and theme of the original text when pasted into Obsidian. 
+## Overview
+
+This extension adds the ability to copy document text as Markdown while preserving the indentation and theme of the original text when pasted into Obsidian. 
+I wanted a way to add code snippets from dnSpy to Obsidian notes while preserving dnSpy's theme and formatting, so I built this.
+
+## Example Use Case: Obsidian Graph Integration
+Embed structured, color-preserving code snippets within Obsidian graph view to clearly visualize and document execution flow.
+
+[![Graph Preview](images/graphSmall.png)](images/graph.png)
+
+## Usage
+
+Select text within dnSpy, right-click, and select "Copy with Markdown" to copy formatted text to the clipboard.
+
+## How It Works
+ - Reads span color data from dnSpy's document viewer
+ - Iterates over text selection and injects Markdown formatting and color annotations while preserving structure
+ - Outputs the formatted text to clipboard
 
 ## Dependency 
 
-This extension must be used with a minimal dnSpy fork that exposes:
-
-- `DocumentViewerContent.ColorCollection`
+Requires a minimal dnSpy fork that exposes 
+ - `DocumentViewerContent.ColorCollection`:
 
 Fork: https://github.com/yuleWorks/dnSpy-exposed-ColorCollection/
 
@@ -25,7 +42,3 @@ After building, copy the compiled extension DLL to a folder within the forked dn
 ## Notes
 
 This was intended to be a one-off tool rather than a general-purpose extension framework.
-
-## Usage
-
-Select text within dnSpy, right-click, and select "Copy with Markdown" to copy formatted text to the clipboard.
