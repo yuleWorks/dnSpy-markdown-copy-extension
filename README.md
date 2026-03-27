@@ -10,8 +10,8 @@ Custom dnSpy extension that copies selected decompiled code as formatted, color-
 This extension adds the ability to copy document text as Markdown while preserving the indentation and theme of the original text when pasted into Obsidian. 
 I wanted a way to add code snippets from dnSpy to Obsidian notes while preserving dnSpy's theme and formatting, so I built this.
 
-## Example Use Case: Obsidian Graph Integration
-Embed structured, color-preserving code snippets within Obsidian graph view to clearly visualize and document execution flow.
+## Example Use Case: Obsidian Canvas Integration
+Embed structured, color-preserving code snippets within Obsidian canvas view to clearly visualize and document execution flow.
 
 [![Graph Preview](images/graphSmall.png)](images/graph.png)
 
