@@ -20,8 +20,15 @@ Embed structured, color-preserving code snippets within Obsidian canvas view to 
 Select text within dnSpy, right-click, and select "Copy with Markdown" to copy formatted text to the clipboard.
 
 ## How It Works
+
+dnSpy does not expose syntax-highlighted spans in a directly usable format. 
+Accessing color data required modifying the internal structure to expose span color information to the extension.
+This enables accurate reconstruction of syntax-highlighted code outside of dnSpy's rendering pipeline.
+
+The extension:
  - Reads span color data from dnSpy's document viewer
- - Iterates over text selection and injects Markdown formatting and color annotations while preserving structure
+ - Maps color information to Markdown-compatible formatting
+ - Reconstructs text while preserving layout and hierarchy
  - Outputs the formatted text to clipboard
 
 ## Dependency 
