@@ -26,8 +26,8 @@ Select text within dnSpy, right-click, and select "Copy with Markdown" to copy f
 
 ## Dependency 
 
-Requires a minimal dnSpy fork that exposes 
- - `DocumentViewerContent.ColorCollection`:
+Requires a minimal dnSpy fork that exposes:
+ - `DocumentViewerContent.ColorCollection`
 
 Fork: https://github.com/yuleWorks/dnSpy-exposed-ColorCollection/
 
