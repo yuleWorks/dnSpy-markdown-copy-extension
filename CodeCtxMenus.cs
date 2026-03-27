@@ -1,20 +1,22 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using dnlib.DotNet;
 using dnSpy.Contracts.Controls;
 using dnSpy.Contracts.Documents.Tabs.DocViewer;
+using dnSpy.Contracts.Documents.TreeView;
 using dnSpy.Contracts.Extension;
 using dnSpy.Contracts.Menus;
-using Microsoft.VisualStudio.Text;
+using dnSpy.Contracts.Text;
 //using dnSpy.Contracts.Themes;
 using dnSpy.Themes;
-using System.Collections.Generic;
-using dnSpy.Contracts.Text;
-using dnSpy.Contracts.Documents.TreeView;
+using Microsoft.VisualStudio.Text;
 //using dnSpy.Themes;
 
 namespace DnSpyMarkdownExtension {
@@ -33,8 +35,7 @@ namespace DnSpyMarkdownExtension {
 			int startPos = 0;
 			int endPos = 0;
 
-			if (documentViewer.Selection.ActivePoint.Position.Position > documentViewer.Selection.AnchorPoint.Position.Position) 
-			{
+			if (documentViewer.Selection.ActivePoint.Position.Position > documentViewer.Selection.AnchorPoint.Position.Position) {
 				startPos = documentViewer.Selection.AnchorPoint.Position.Position;
 				endPos = documentViewer.Selection.ActivePoint.Position.Position;
 			}
@@ -49,7 +50,7 @@ namespace DnSpyMarkdownExtension {
 
 			var themeColors = Theme.hexColors;
 
-			if(ThemeColors.Count == 0) {
+			if (ThemeColors.Count == 0) {
 				foreach (Tuple<string, string> pair in themeColors) {
 					string TextClassification = "";
 					if (pair.Item1 == "DefaultText") { //Theme.hexColors uses "DefaultText" to describe normal text, while colorSpan uses "Text".
@@ -64,13 +65,11 @@ namespace DnSpyMarkdownExtension {
 
 			int colorListIndexStart = 0;
 			int colorListIndexEnd = 0;
-			int counter	= 0;
+			int counter = 0;
 
-			foreach (SpanData<object> colorSpan in documentViewer.Content.ColorCollection.colorsList) 
-			{
+			foreach (SpanData<object> colorSpan in documentViewer.Content.ColorCollection.colorsList) {
 				string spanColor = Enum.GetName(typeof(TextColor), (TextColor)colorSpan.Data);
-				if(!UsedHexColors.ContainsKey(spanColor)) 
-				{
+				if (!UsedHexColors.ContainsKey(spanColor)) {
 					foreach (var (themeColor, themeHex) in ThemeColors) {
 						if (spanColor == themeColor) {
 							UsedHexColors.Add(spanColor, themeHex);
@@ -88,31 +87,62 @@ namespace DnSpyMarkdownExtension {
 			string markdownOutput = "";
 
 			//&emsp; is used for markdown blank space
-
-			for (int i = colorListIndexStart; i <= colorListIndexEnd; i++) 
-			{
+			
+			for (int i = colorListIndexStart; i <= colorListIndexEnd; i++) {
 				string part = documentViewer.Content.Text.Substring(documentViewer.Content.ColorCollection.colorsList[i].Span.Start, documentViewer.Content.ColorCollection.colorsList[i].Span.Length);
 				string hex = UsedHexColors[Enum.GetName(typeof(TextColor), documentViewer.Content.ColorCollection.colorsList[i].Data)];
-				if (part.Contains("\t"))
-				{
-					part = part.Replace("\t", "&emsp;&emsp;&emsp;");	
+				int tabcount = 0;
+				if (part.Contains("\t")) {
+					part = part.Replace("\t", "&emsp;&emsp;&emsp;");
 				}
 				if (part.Contains("*")) {
 					part = part.Replace("*", @"\*");
 				}
 
-				if(part == " "
+				if (part == " "
 				|| part == "." || part == ";" || part == "(" || part == ")" || part == "<" || part == ">" || part == "{" || part == "}" // This stops punctuation from being colored
-				|| part.Contains("\t") || part.Contains("&emsp;") || part.Contains("\n") || part.Contains("\r"))
-				{
+				|| part.Contains("\t") || part.Contains("&emsp;") || part.Contains("\n") || part.Contains("\r")) {
 					markdownOutput += part;
 				}
-				else 
-				{
+				else {
 					markdownOutput += "<font style=\"color: " + hex + ";\">" + part + "</font>";
-				}				
+				}
 			}
 
+			// next, remove excessive leading tabs
+			string space = "&emsp;&emsp;&emsp;";
+			string[] outputLines = markdownOutput.Split(new[] { "\r\n", "\n"}, StringSplitOptions.None);
+
+			List<int> leadingTabsPerLine = new List<int>();
+
+			foreach (string line in outputLines) {
+				if (string.IsNullOrWhiteSpace(line)) {
+					continue;
+				}
+				int spaceCount = 0;
+				int spaceIndex = 0;
+
+				while(spaceIndex+space.Length <= line.Length && line.Substring(spaceIndex, space.Length) == space) {
+					spaceCount++;
+					spaceIndex += space.Length;
+				}
+				leadingTabsPerLine.Add(spaceCount);
+			}
+
+			int minimumTabs = leadingTabsPerLine.Count > 0 ? leadingTabsPerLine.Min() : 0;
+
+			for (int i = 0; i < outputLines.Length; i++) {
+				int removeCount = 0;
+				int index = 0;
+
+				while (removeCount < minimumTabs && index + space.Length <= outputLines[i].Length && outputLines[i].Substring(index, space.Length) == space) {
+					removeCount++;
+					index += space.Length;
+				}
+				outputLines[i] = outputLines[i].Substring(index);
+			}
+
+			markdownOutput = string.Join("\n", outputLines);
 			try {
 				Clipboard.SetText($"{markdownOutput}");
 			}
@@ -134,7 +164,7 @@ namespace DnSpyMarkdownExtension {
 				startPos = documentViewer.Selection.ActivePoint.Position.Position;
 				endPos = documentViewer.Selection.AnchorPoint.Position.Position;
 			}
-			
+
 			return $"Copy with markdown ({startPos} to {endPos})";
 		}
 
