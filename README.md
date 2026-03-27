@@ -13,7 +13,7 @@ I wanted a way to add code snippets from dnSpy to Obsidian notes while preservin
 ## Example Use Case: Obsidian Canvas Integration
 Embed structured, color-preserving code snippets within Obsidian canvas view to clearly visualize and document execution flow.
 
-[![Graph Preview](images/graphSmall.png)](images/graph.png)
+[![Graph Preview](images/graph.png)](images/graph.png)
 
 ## Usage
 
